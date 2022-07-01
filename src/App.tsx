@@ -60,6 +60,7 @@ function App() {
             <li key={chain + idx} className='capitalize flex flex-col'>
               <span>{chain}</span>
               <span className='font-bold text-2xl'>
+                {/* @ts-expect-error */}
                 {bal.toFixed(2)} {chainsToNativeSymbols[chain]}
               </span>
             </li>
