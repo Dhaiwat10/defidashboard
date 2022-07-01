@@ -1,6 +1,7 @@
 import type { Blockchain } from '@ankr.com/ankr.js/dist/types';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useEffect, useMemo, useState } from 'react';
+import { useAccount } from 'wagmi';
 import {
   chainsToNativeSymbols,
   getAllNativeCurrencyBalances,
@@ -19,18 +20,23 @@ function App() {
     return res;
   }, [allNativeBalances]);
 
+  const { address } = useAccount();
+
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     (async () => {
-      const totalBal = await getTotalMultichainBalance(
-        '0x0ED6Cec17F860fb54E21D154b49DAEFd9Ca04106'
-      );
-      const nativeBalances = await getAllNativeCurrencyBalances(
-        '0x0ED6Cec17F860fb54E21D154b49DAEFd9Ca04106'
-      );
+      setLoading(true);
+      if (!address) {
+        return;
+      }
+      const totalBal = await getTotalMultichainBalance(address);
+      const nativeBalances = await getAllNativeCurrencyBalances(address);
       setAllNativeBalances(nativeBalances);
       setTotalBalance(Math.round(totalBal));
+      setLoading(false);
     })();
-  }, []);
+  }, [address]);
 
   return (
     <div className='flex flex-col items-center py-8'>
@@ -48,25 +54,37 @@ function App() {
         <ConnectButton />
       </div>
 
-      <div className='bg-zinc-200 py-4 px-8 rounded flex flex-col mt-8 w-[300px] items-center'>
-        <h3 className='text-blue-800 font-bold'>Net Worth</h3>
-        <span className='text-3xl font-bold'>${totalBalance}</span>
-      </div>
+      {!address && (
+        <p className='mt-4 font-bold'>
+          Please connect your wallet to see your balances. ^^ :)
+        </p>
+      )}
 
-      <div className='bg-zinc-200 py-4 px-8 rounded flex flex-col mt-4 w-[300px] items-center'>
-        <h3 className='text-blue-800 font-bold'>Wallet</h3>
-        <ul className='mt-4 flex flex-col gap-2'>
-          {nativeBalancesSorted.map(([chain, bal], idx) => (
-            <li key={chain + idx} className='capitalize flex flex-col'>
-              <span>{chain}</span>
-              <span className='font-bold text-2xl'>
-                {/* @ts-expect-error */}
-                {bal.toFixed(2)} {chainsToNativeSymbols[chain]}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
+      {loading && <p className='mt-4 font-bold'>Loading your balances...</p>}
+
+      {totalBalance && (
+        <div className='bg-zinc-200 py-4 px-8 rounded flex flex-col mt-8 w-[300px] items-center'>
+          <h3 className='text-blue-800 font-bold'>Net Worth</h3>
+          <span className='text-3xl font-bold'>${totalBalance}</span>
+        </div>
+      )}
+
+      {nativeBalancesSorted.length > 0 && (
+        <div className='bg-zinc-200 py-4 px-8 rounded flex flex-col mt-4 w-[300px] items-center'>
+          <h3 className='text-blue-800 font-bold'>Wallet</h3>
+          <ul className='mt-4 flex flex-col gap-2'>
+            {nativeBalancesSorted.map(([chain, bal], idx) => (
+              <li key={chain + idx} className='capitalize flex flex-col'>
+                <span>{chain}</span>
+                <span className='font-bold text-2xl'>
+                  {/* @ts-expect-error */}
+                  {bal.toFixed(2)} {chainsToNativeSymbols[chain]}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
