@@ -12,7 +12,7 @@ const listOfChains: Blockchain[] = [
   'polygon',
 ];
 
-const chainsToNativeSymbols: { [key in Blockchain]: string } = {
+export const chainsToNativeSymbols: { [key in Blockchain]: string } = {
   eth: 'ETH',
   arbitrum: 'ETH',
   avalanche: 'AVAX',
@@ -38,7 +38,6 @@ export const getTotalMultichainBalance = async (walletAddress: string) => {
       walletAddress,
       chain
     );
-    console.log({ assets });
     total += +totalBalanceUsd;
   }
   return total;
@@ -53,5 +52,17 @@ export const getNativeCurrencyBalance = async (
   const nativeCurrencyBalance = assets.find(
     (asset) => asset.tokenSymbol === nativeCurrencySymbol
   );
-  return nativeCurrencyBalance ? nativeCurrencyBalance.balance : 0;
+  return nativeCurrencyBalance ? +nativeCurrencyBalance.balance : 0;
+};
+
+export const getAllNativeCurrencyBalances = async (walletAddress: string) => {
+  const balances: { [key in Blockchain]?: number } = {};
+  for await (const chain of listOfChains) {
+    const nativeCurrencyBalance = await getNativeCurrencyBalance(
+      walletAddress,
+      chain
+    );
+    balances[chain] = nativeCurrencyBalance;
+  }
+  return balances;
 };
