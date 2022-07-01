@@ -51,7 +51,7 @@ function App() {
       <p className='mt-2 font-bold'>yo, what's in your wallet?</p>
 
       <div className='flex flex-col items-center mt-4'>
-        <ConnectButton />
+        <ConnectButton showBalance={false} />
       </div>
 
       {!address && (
