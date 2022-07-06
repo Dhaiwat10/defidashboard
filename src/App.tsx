@@ -93,24 +93,26 @@ function App() {
       )}
 
       {/* NFTs section */}
-      <div className='mt-8'>
-        <h3 className='font-bold text-3xl text-blue-800 text-center'>NFTs</h3>
-        <div className='grid grid-cols-3 gap-6'>
-          {nfts.map((nft) => {
-            const id = `${nft.contractAddress}/${nft.tokenId}`;
+      {nfts.length > 0 && (
+        <div className='mt-8'>
+          <h3 className='font-bold text-3xl text-blue-800 text-center'>NFTs</h3>
+          <div className='grid grid-cols-3 gap-6'>
+            {nfts.map((nft) => {
+              const id = `${nft.contractAddress}/${nft.tokenId}`;
 
-            return (
-              <div
-                key={id}
-                className='bg-zinc-200 py-4 px-8 rounded flex flex-col mt-4 w-[200px] items-center'
-              >
-                <img src={nft.imageUrl} className='w-32 h-32 rounded-lg' />
-                <h3 className='text-blue-800 font-bold mt-2'>{nft.name}</h3>
-              </div>
-            );
-          })}
+              return (
+                <div
+                  key={id}
+                  className='bg-zinc-200 py-4 px-8 rounded flex flex-col mt-4 w-[200px] items-center'
+                >
+                  <img src={nft.imageUrl} className='w-32 h-32 rounded-lg' />
+                  <h3 className='text-blue-800 font-bold mt-2'>{nft.name}</h3>
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
