@@ -66,3 +66,11 @@ export const getAllNativeCurrencyBalances = async (walletAddress: string) => {
   }
   return balances;
 };
+
+export const getNfts = async (walletAddress: string) => {
+  const { assets } = await provider.getNFTsByOwner({
+    walletAddress,
+    // blockchain: 'eth',
+  });
+  return assets;
+};
